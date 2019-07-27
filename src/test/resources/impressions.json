@@ -1,0 +1,38 @@
+[
+    {
+        "app_id": 32,
+        "advertiser_id": 8,
+        "country_code": "UK",
+        "id": "a39747e8-9c58-41db-8f9f-27963bc248b5"
+    },
+    {
+        "app_id": 32,
+        "advertiser_id": 9,
+        "country_code": "UK",
+        "id": "a39747e8-9c58-41db-8f9f-27963bc248b6"
+    },
+    {
+        "app_id": 30,
+        "advertiser_id": 17,
+        "country_code": null,
+        "id": "5deacf2d-833a-4549-a398-20a0abeec0bc"
+    },
+    {
+        "app_id": 4,
+        "advertiser_id": 15,
+        "country_code": "IT",
+        "id": "2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7521"
+    },
+    {
+        "app_id": 22,
+        "advertiser_id": 20,
+        "country_code": "IT",
+        "id": "fbb52038-4db1-46d3-a4de-108fd12cbfc7"
+    },
+    {
+        "app_id": 9,
+        "advertiser_id": 32,
+        "country_code": "",
+        "id": "b15449b6-14c9-406b-bce9-749805dd6a3e"
+    }
+]
