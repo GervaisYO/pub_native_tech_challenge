@@ -43,7 +43,7 @@ class DataWriter(parallelism: Int, groupSize: Int, val directoryPath: String)
   private[data] def writeElementsToFile[T](key: String, elements: Seq[T])
                                           (implicit fjs: Writes[T]): Future[Either[Throwable, Unit]] = {
     val pathDir = Paths.get(s"$directoryPath/$key")
-    val filePath = s"$directoryPath/$key/${key}_${UUID.randomUUID()}_${Instant.now().toString}.json"
+    val filePath = s"$directoryPath/$key/${key}_${UUID.randomUUID()}_${Instant.now().toEpochMilli.toString}.json"
     if (Files.exists(pathDir)) {
       writeToFile(
         filePath,
