@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{Sink, Source}
 import com.pubnative.domain.Impression
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import play.api.libs.json.Json
@@ -59,7 +59,7 @@ class DataWriterSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       val result =
         dataWriter
           .writePartitions(impressionsSource)(impression => s"${impression.app_id}_${impression.country_code.getOrElse("NONE")}")
-          .runForeach(println)
+          .runWith(Sink.ignore)
 
       await(result)
 

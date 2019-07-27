@@ -41,6 +41,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
 
       await(impressions) should contain theSameElementsAs List(
         Impression("a39747e8-9c58-41db-8f9f-27963bc248b5", 32, Some("UK"), 8),
+        Impression("a39747e8-9c58-41db-8f9f-27963bc248b6", 32, Some("UK"), 9),
         Impression("5deacf2d-833a-4549-a398-20a0abeec0bc", 30, None, 17),
         Impression("2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7521", 4, Some("IT"), 15),
         Impression("fbb52038-4db1-46d3-a4de-108fd12cbfc7", 22, Some("IT"), 20),
@@ -56,7 +57,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
             impression :: acc
           }
 
-      await(impressions).size shouldBe 5
+      await(impressions).size shouldBe 6
     }
 
     "read click when given file paths"  in new DataLoadSpecData {
