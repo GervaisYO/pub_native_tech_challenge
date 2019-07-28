@@ -15,5 +15,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.typelevel" %% "cats-core" % "1.6.1",
   "org.rogach" %% "scallop" % "3.3.1",
+  "org.slf4j" % "slf4j-api" % "1.7.26",
+  "org.slf4j" % "slf4j-simple" % "1.7.26",
   "org.scalatest" %% "scalatest" % "3.0.8" % Test
 )
