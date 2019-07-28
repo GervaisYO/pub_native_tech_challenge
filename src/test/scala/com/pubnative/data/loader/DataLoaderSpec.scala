@@ -42,12 +42,18 @@ class DataLoaderSpec extends WordSpec with Matchers {
           }
 
       await(impressions) should contain theSameElementsAs List(
-        Impression("a39747e8-9c58-41db-8f9f-27963bc248b5", 32, Some("UK"), 8),
-        Impression("a39747e8-9c58-41db-8f9f-27963bc248b6", 32, Some("UK"), 9),
-        Impression("5deacf2d-833a-4549-a398-20a0abeec0bc", 30, None, 17),
-        Impression("2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7521", 4, Some("IT"), 15),
-        Impression("fbb52038-4db1-46d3-a4de-108fd12cbfc7", 22, Some("IT"), 20),
-        Impression("b15449b6-14c9-406b-bce9-749805dd6a3e", 9, Some(""), 32)
+        Impression("b15449b6-14c9-406b-bce9-749805dd6a32", 9, Some(""), 12),
+        Impression("b15449b6-14c9-406b-bce9-749805dd6a3e", 9, Some(""), 11),
+        Impression("fbb52038-4db1-46d3-a4de-108fd12cbfc8", 22, Some("IT"), 10),
+        Impression("fbb52038-4db1-46d3-a4de-108fd12cbfc7", 22, Some("IT"), 9),
+        Impression("2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7522", 4, Some("IT"), 8),
+        Impression("2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7521", 4, Some("IT"), 7),
+        Impression("5deacf2d-833a-4549-a398-20a0abeec0bs", 30, None, 6),
+        Impression("5deacf2d-833a-4549-a398-20a0abeec0bt", 30, None, 5),
+        Impression("5deacf2d-833a-4549-a398-20a0abeec0bc", 30, None, 4),
+        Impression("a39747e8-9c58-41db-8f9f-27963bc248b7", 32, Some("UK"), 3),
+        Impression("a39747e8-9c58-41db-8f9f-27963bc248b6", 32, Some("UK"), 2),
+        Impression("a39747e8-9c58-41db-8f9f-27963bc248b5", 32, Some("UK"), 1)
       )
     }
 
@@ -60,7 +66,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
             impression :: acc
           }
 
-      await(impressions).size shouldBe 6
+      await(impressions).size shouldBe 12
     }
 
     "read click when given file paths"  in new DataLoadSpecData {
@@ -72,11 +78,14 @@ class DataLoaderSpec extends WordSpec with Matchers {
           }
 
       await(clicks) should contain theSameElementsAs List(
-        Click("97dd2a0f-6d42-4c63-8cd6-5270c19f20d6", 2.091225600111518),
-        Click("43bd7feb-3fea-40b4-a140-d01a35ec1f73", 2.4794577548980876),
-        Click("1b04c706-e3d7-4f70-aac8-25635fa24250", 1.0617394700223026),
-        Click("31214d91-d950-4464-8316-ed3d302d49d3", 2.074762244925742),
-        Click("fbb52038-4db1-46d3-a4de-108fd12cbfc7", 2.7837584244414537)
+        Click("b15449b6-14c9-406b-bce9-749805dd6a3e", 0.783758424441452),
+        Click("fbb52038-4db1-46d3-a4de-108fd12cbfc7", 2.783758424441452),
+        Click("2ae9fd3f-4c70-4d9f-9fe0-98cb2f0b7521", 2.7837584244414537),
+        Click("5deacf2d-833a-4549-a398-20a0abeec0bc", 2.074762244925742),
+        Click("a39747e8-9c58-41db-8f9f-27963bc248b7", 1.0617394700223026),
+        Click("a39747e8-9c58-41db-8f9f-27963bc248b6", 2.4794577548980876),
+        Click("a39747e8-9c58-41db-8f9f-27963bc248b5", 2.091225600111518),
+        Click("5deacf2d-833a-4549-a398-20a0abeec0bt", 0.583758424441452)
       )
     }
 
@@ -89,7 +98,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
             click :: acc
           }
 
-      await(clicks).size shouldBe 5
+      await(clicks).size shouldBe 8
     }
   }
 }

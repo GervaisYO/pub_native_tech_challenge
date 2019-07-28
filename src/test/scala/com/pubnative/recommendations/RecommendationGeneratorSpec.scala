@@ -1,4 +1,4 @@
-package com.pubnative.metrics
+package com.pubnative.recommendations
 
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit
@@ -10,15 +10,16 @@ import akka.stream.scaladsl.{Sink, Source}
 import com.pubnative.data.loader.DataLoader
 import com.pubnative.data.writer.DataWriter
 import com.pubnative.domain.{Click, Impression}
+import com.pubnative.metrics.{Metric, MetricsGenerator}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import play.api.libs.json.Json
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 import scala.io.{Source => SourceIO}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class MetricsGeneratorSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class RecommendationGeneratorSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
     super.afterAll()
@@ -31,14 +32,13 @@ class MetricsGeneratorSpec extends WordSpec with Matchers with BeforeAndAfterAll
     }
   }
 
-  trait MetricGeneratorSpecData {
-
+  trait RecommendationGeneratorSpecData {
     implicit val actorSystem: ActorSystem = ActorSystem.create("MetricsGeneratorSpec")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     val dataLoader = new DataLoader(2)
-    val metricsGenerator = new MetricsGenerator(dataLoader)
     val dataWriter = new DataWriter(2, 1)
+    val recommendationGenerator = new RecommendationGenerator(dataLoader, dataWriter, 2)
     val dirPath = "./target"
     val duration = Duration(20, TimeUnit.SECONDS)
 
@@ -79,27 +79,28 @@ class MetricsGeneratorSpec extends WordSpec with Matchers with BeforeAndAfterAll
     }
   }
 
-
-  "MetricsGenerator" should {
-    "generate metrics by app id and country code" in new MetricGeneratorSpecData {
+  "RecommendationGenerator" should {
+    "generate recommendation for top advertiser per app id and country code" in new RecommendationGeneratorSpecData {
       generatePartitionedImpressions()
       generatePartitionedClicks()
 
-      val metrics: List[Metric] =
-        await(metricsGenerator
-          .generateMetrics(Paths.get(dirPath, "impressions"), Paths.get(dirPath, "clicks"))
-          .runFold(List.empty[Metric]) { (acc, metric) =>
-            metric :: acc
-          }
+      val recommendations =
+        await(
+          recommendationGenerator
+            .generateRecommendations(Paths.get(dirPath, "impressions"), Paths.get(dirPath, "clicks"))
+            .runFold(List.empty[Recommendation]) { (acc, recommendation) =>
+              recommendation :: acc
+            }
         )
 
-      metrics should contain theSameElementsAs List(
-        Metric(Some(32), Some("UK"), 3, 3, 5.632422825031908),
-        Metric(Some(9), Some(""), 2, 1, 0.783758424441452),
-        Metric(Some(4), Some("IT"), 2, 1, 2.7837584244414537),
-        Metric(Some(30), None, 3, 2, 2.658520669367194),
-        Metric(Some(22), Some("IT"), 2, 1, 2.783758424441452)
-      )
+      recommendations should contain theSameElementsAs
+        List(
+          Recommendation(Some(32),Some("UK"), List(2, 1)),
+          Recommendation(Some(9),Some(""), List(11, 12)),
+          Recommendation(Some(4),Some("IT"), List(7, 8)),
+          Recommendation(Some(30),None, List(4, 5)),
+          Recommendation(Some(22),Some("IT"),List(9, 10))
+        )
     }
   }
 

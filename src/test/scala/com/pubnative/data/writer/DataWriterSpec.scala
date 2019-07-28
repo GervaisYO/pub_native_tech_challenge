@@ -71,11 +71,11 @@ class DataWriterSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       Files.exists(Paths.get(s"$dirPath/22_IT")) shouldBe true
       Files.exists(Paths.get(s"$dirPath/9_")) shouldBe true
 
-      new File(s"$dirPath/32_UK").listFiles().length shouldBe 2
-      new File(s"$dirPath/30_NONE").listFiles().length shouldBe 1
-      new File(s"$dirPath/4_IT").listFiles().length shouldBe 1
-      new File(s"$dirPath/22_IT").listFiles().length shouldBe 1
-      new File(s"$dirPath/9_").listFiles().length shouldBe 1
+      new File(s"$dirPath/32_UK").listFiles().length shouldBe 3
+      new File(s"$dirPath/30_NONE").listFiles().length shouldBe 3
+      new File(s"$dirPath/4_IT").listFiles().length shouldBe 2
+      new File(s"$dirPath/22_IT").listFiles().length shouldBe 2
+      new File(s"$dirPath/9_").listFiles().length shouldBe 2
     }
   }
 
