@@ -1,5 +1,7 @@
 package com.pubnative.data.loader
 
+import java.nio.file.Path
+
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.pubnative.domain.{Click, Impression}
@@ -16,15 +18,15 @@ class DataLoader(parallelism: Int)(implicit ec: ExecutionContext) {
 
   private val logger = Logger(classOf[DataLoader])
 
-  def loadImpressions(filePaths: Iterator[String]): Source[Impression, NotUsed] = {
+  def loadImpressions(filePaths: Iterator[Path]): Source[Impression, NotUsed] = {
     readDomainObjectFromPath[Impression](filePaths)
   }
 
-  def loadClicks(filePaths: Iterator[String]): Source[Click, NotUsed] = {
+  def loadClicks(filePaths: Iterator[Path]): Source[Click, NotUsed] = {
     readDomainObjectFromPath[Click](filePaths)
   }
 
-  private[data] def readDomainObjectFromPath[T](filePaths: Iterator[String])
+  private[data] def readDomainObjectFromPath[T](filePaths: Iterator[Path])
                                                (implicit fjs: Reads[T]): Source[T, NotUsed] = {
     Source
       .fromIterator(() => filePaths)
@@ -40,12 +42,12 @@ class DataLoader(parallelism: Int)(implicit ec: ExecutionContext) {
       }
   }
 
-  private[data] def readDomainObjectFromPath(path: String): Future[Either[ThrowableWithPath, String]] = {
+  private[data] def readDomainObjectFromPath(path: Path): Future[Either[ThrowableWithPath, String]] = {
     Future {
-      Try(SourceIO.fromFile(path).mkString)
+      Try(SourceIO.fromFile(path.toFile.getAbsolutePath).mkString)
         .toEither
         .swap
-        .map(t => ThrowableWithPath(t, path))
+        .map(t => ThrowableWithPath(t, path.toFile.getAbsolutePath))
         .swap
     }
   }

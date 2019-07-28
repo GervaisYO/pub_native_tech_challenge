@@ -1,9 +1,11 @@
 package com.pubnative.data.loader
 
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
+import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, scaladsl}
 import com.pubnative.domain.{Click, Impression}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -32,9 +34,9 @@ class DataLoaderSpec extends WordSpec with Matchers {
 
   "DataLoader" should {
     "read impressions when given file paths"  in new DataLoadSpecData {
-      val impressions =
+      val impressions: Future[List[Impression]] =
         dataLoader
-          .loadImpressions(List("./src/test/resources/impressions.json").toIterator)
+          .loadImpressions(List(Paths.get("./src/test/resources/impressions.json")).toIterator)
           .runFold(List.empty[Impression]) { (acc, impression) =>
             impression :: acc
           }
@@ -50,8 +52,9 @@ class DataLoaderSpec extends WordSpec with Matchers {
     }
 
     "convert impressions json to iterator of impressions" in new DataLoadSpecData {
-      val impressionSource = dataLoader.convertJsonStringToDomainObject[Impression](impressionJsonContent)
-      val impressions =
+      val impressionSource: scaladsl.Source[Impression, NotUsed] =
+        dataLoader.convertJsonStringToDomainObject[Impression](impressionJsonContent)
+      val impressions: Future[List[Impression]] =
         impressionSource
           .runFold(List.empty[Impression]) { (acc, impression) =>
             impression :: acc
@@ -61,9 +64,9 @@ class DataLoaderSpec extends WordSpec with Matchers {
     }
 
     "read click when given file paths"  in new DataLoadSpecData {
-      val clicks =
+      val clicks: Future[List[Click]] =
         dataLoader
-          .loadClicks(List("./src/test/resources/clicks.json").toIterator)
+          .loadClicks(List(Paths.get("./src/test/resources/clicks.json")).toIterator)
           .runFold(List.empty[Click]) { (acc, click) =>
             click :: acc
           }
@@ -78,8 +81,9 @@ class DataLoaderSpec extends WordSpec with Matchers {
     }
 
     "convert clicks json to iterator of clicks" in new DataLoadSpecData {
-      val clickSource = dataLoader.convertJsonStringToDomainObject[Click](clickJsonContent)
-      val clicks =
+      val clickSource: scaladsl.Source[Click, NotUsed] =
+        dataLoader.convertJsonStringToDomainObject[Click](clickJsonContent)
+      val clicks: Future[List[Click]] =
         clickSource
           .runFold(List.empty[Click]) { (acc, click) =>
             click :: acc
