@@ -9,10 +9,10 @@ import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import cats.data.EitherT
+import cats.implicits._
 import com.pubnative.data.loader.DataLoader
 import com.typesafe.scalalogging.Logger
 import play.api.libs.json.{Json, Writes}
-import cats.implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -37,6 +37,17 @@ class DataWriter(parallelism: Int, groupSize: Int)
           }
         )
         .map(iterable => iterable.size)
+      }
+  }
+
+  def writeContentToFile[T](source: Source[T, NotUsed], filePath: Path)(implicit fjs: Writes[T]): Source[Either[Throwable, Unit], NotUsed] = {
+    source
+      .fold(List.empty[T]) { (acc, element) =>
+        element :: acc
+      }
+      .mapAsync(1){ elements =>
+        val content = elements.map(element => Json.toJson(element).toString()).mkString("[", ",", "]")
+        writeToFile(filePath, content)
       }
   }
 

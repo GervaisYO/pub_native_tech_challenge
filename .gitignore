@@ -14,3 +14,6 @@ target
 project/project
 src_managed/
 scala-2.12
+
+## Output folder
+output/
