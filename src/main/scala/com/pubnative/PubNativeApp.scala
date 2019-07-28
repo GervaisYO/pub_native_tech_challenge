@@ -5,7 +5,8 @@ import java.util.concurrent.Executors
 import com.typesafe.scalalogging.Logger
 import org.rogach.scallop._
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.util.Try
 
 class PubNativeConf(arguments: Seq[String]) extends ScallopConf(arguments) {
   val impressionsDir: ScallopOption[String] = opt[String](required = true)
@@ -25,12 +26,16 @@ object PubNativeApp {
 
     val numberOfCores = Runtime.getRuntime.availableProcessors()
     val numberOfThreads: Int = (numberOfCores * 2) - 2
-    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(numberOfThreads))
+    val executorService = Executors.newFixedThreadPool(numberOfThreads)
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(executorService)
 
     val pubNativeBusinessLogic = new PubNativeBusinessLogic(conf, numberOfThreads)
-    pubNativeBusinessLogic
-      .generateMetricsAndTopAdvertisers()
-      .map(_ => System.exit(0))
+
+    (for {
+      _ <- pubNativeBusinessLogic.generateMetricsAndTopAdvertisers()
+      _ <- pubNativeBusinessLogic.actorSystem.terminate()
+      _ <- Future.fromTry(Try(System.exit(0)))
+    } yield ())
       .recover {
         case e: Throwable =>
           logger.error("error while generating metrics and top advertisers", e)
