@@ -3,7 +3,6 @@ package com.pubnative
 import java.io.File
 import java.nio.file.Paths
 import java.time.Instant
-import java.util.concurrent.Executors
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -14,17 +13,14 @@ import com.pubnative.metrics.MetricsGenerator
 import com.pubnative.recommendations.RecommendationGenerator
 import com.typesafe.scalalogging.Logger
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
-class PubNativeBusinessLogic(pubNativeConf: PubNativeConf) {
+class PubNativeBusinessLogic(pubNativeConf: PubNativeConf, numberOfThreads: Int)(implicit ec: ExecutionContext) {
 
   import pubNativeConf._
 
   val logger = Logger(classOf[PubNativeBusinessLogic])
 
-  private val numberOfCores = Runtime.getRuntime.availableProcessors()
-  private val numberOfThreads: Int = (numberOfCores * 2) - 2
-  private implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(numberOfThreads))
   implicit val actorSystem: ActorSystem = ActorSystem.apply(name = "PubNativeBusinessLogic", defaultExecutionContext = Some(ec))
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
@@ -44,17 +40,12 @@ class PubNativeBusinessLogic(pubNativeConf: PubNativeConf) {
   private val recommendationsFilePath = Paths.get(outputDirectory, "recommendations.json")
 
   def generateMetricsAndTopAdvertisers(): Future[Unit] = {
-    (for {
+    for {
       _ <- writePartitionedImpressions()
       _ <- writePartitionedClicks()
       _ <- generateMetrics()
       _ <- generateRecommendation()
-    } yield ())
-      .recover {
-        case e: Throwable =>
-          logger.error("error while generating metrics and top advertisers", e)
-          ()
-      }
+    } yield ()
   }
 
   private def generateMetrics() = {

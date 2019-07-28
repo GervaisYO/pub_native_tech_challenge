@@ -1,9 +1,11 @@
 package com.pubnative
 
+import java.util.concurrent.Executors
+
+import com.typesafe.scalalogging.Logger
 import org.rogach.scallop._
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 class PubNativeConf(arguments: Seq[String]) extends ScallopConf(arguments) {
   val impressionsDir: ScallopOption[String] = opt[String](required = true)
@@ -16,9 +18,23 @@ class PubNativeConf(arguments: Seq[String]) extends ScallopConf(arguments) {
 }
 
 object PubNativeApp {
+  val logger = Logger("PubNativeApp")
+
   def main(args: Array[String]): Unit = {
     val conf = new PubNativeConf(args)
-    val pubNativeBusinessLogic = new PubNativeBusinessLogic(conf)
-    Await.result(pubNativeBusinessLogic.generateMetricsAndTopAdvertisers(), Duration.Inf)
+
+    val numberOfCores = Runtime.getRuntime.availableProcessors()
+    val numberOfThreads: Int = (numberOfCores * 2) - 2
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(numberOfThreads))
+
+    val pubNativeBusinessLogic = new PubNativeBusinessLogic(conf, numberOfThreads)
+    pubNativeBusinessLogic
+      .generateMetricsAndTopAdvertisers()
+      .map(_ => System.exit(0))
+      .recover {
+        case e: Throwable =>
+          logger.error("error while generating metrics and top advertisers", e)
+          System.exit(1)
+      }
   }
 }
