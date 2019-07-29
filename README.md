@@ -23,3 +23,9 @@ To run the application one must execute the following steps:
 - navigate to the root of the project
 - execute 'sbt assembly': this will generate a jar file in the folder XXX
 - navigate to the folder where the jar file was generated and run the application: The application accepts 
+
+## Assumptions made during the development process
+- Number of advertiser per app_id and country_code is less then Int.MAX_VALUE
+
+## Could be done better
+- Error handling
