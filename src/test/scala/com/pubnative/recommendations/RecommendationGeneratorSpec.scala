@@ -10,7 +10,6 @@ import akka.stream.scaladsl.{Sink, Source}
 import com.pubnative.data.loader.DataLoader
 import com.pubnative.data.writer.DataWriter
 import com.pubnative.domain.{Click, Impression}
-import com.pubnative.metrics.{Metric, MetricsGenerator}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import play.api.libs.json.Json
 

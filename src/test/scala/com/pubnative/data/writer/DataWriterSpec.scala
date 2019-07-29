@@ -50,7 +50,7 @@ class DataWriterSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   "DataWriter" should {
-    "write partitioned data" in new DataWriterSpecData {
+    "write partitioned impressions" in new DataWriterSpecData {
       val impressionsJson: String =
         SourceIO
           .fromFile("./src/test/resources/impressions.json")
@@ -76,6 +76,10 @@ class DataWriterSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       new File(s"$dirPath/4_IT").listFiles().length shouldBe 2
       new File(s"$dirPath/22_IT").listFiles().length shouldBe 2
       new File(s"$dirPath/9_").listFiles().length shouldBe 2
+    }
+
+    "write partitioned clicks" in new DataWriterSpecData {
+
     }
   }
 
