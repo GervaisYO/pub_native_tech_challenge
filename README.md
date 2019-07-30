@@ -24,7 +24,7 @@ To run the application one must execute the following steps:
 - execute 'sbt assembly': this will generate a jar file in the folder **pub-native-jar**. The repository already contains a jar file.
 - navigate to the folder where the jar file was generated and run the application: 
 ```
-java -jar pub_native_tech_challenge.jar --impressions-dir /Users/gsiewe/IdeaProjects/PubNative/output/impressions --clicks-dir /Users/gsiewe/IdeaProjects/PubNative/output/clicks --output-dir /Users/gsiewe/IdeaProjects/PubNative/output --streams-parallelism 50 --source-group-size 1000
+java -jar pub_native_tech_challenge.jar --impressions-dir XXX --clicks-dir XXX --output-dir XXX --streams-parallelism 50 --source-group-size 1000
 ``` 
 
 The application accepts three mandatory parameters and three optional parameters:
