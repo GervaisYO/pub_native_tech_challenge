@@ -31,7 +31,7 @@ The application accepts three mandatory parameters and three optional parameters
 - impressions-dir (*mandatory*): this is the directory where the impressions files are stored
 - clicks-dir (*mandatory*): this is the directory where the clicks files are stored
 - output-dir (*mandatory*): this is the directory where the output files (metrics.json and recommendations.json) will be stored 
-- streams-parallelism (*default value is (numOfCores * 2 - 2)*): this parameter controls the parallelism level for the stream processing
+- streams-parallelism (*default value is (numOfCores * 2 - 2)*): this parameter controls the parallelism level for the stream processing. You can play around with this parameter to see which value fit best. Since i don't have all the data and also not having a machine with 8 cores, i thought that defining a paramter for the parallelism level of the stream processing would be better
 - source-group-size (*default value is 1000*): this parameter controls the number of items to group before writing them to the proper partition
 - top-advertiser-count (*default value is 5*): this parameter controls the number of top advertiser per **app_id** and **country_code** to generate for each recommendation
 
