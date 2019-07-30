@@ -38,7 +38,7 @@ class RecommendationGeneratorSpec extends WordSpec with Matchers {
     def generatePartitionedImpressions(): Done = {
       val impressionsJson: String =
         SourceIO
-          .fromFile("./src/test/resources/impressions.json")
+          .fromFile("./src/test/resources/impressions/impressions.json")
           .mkString
 
       val impressionsSource = Source.fromIterator(() => Json.parse(impressionsJson).as[Iterator[Impression]])
@@ -54,7 +54,7 @@ class RecommendationGeneratorSpec extends WordSpec with Matchers {
     def generatePartitionedClicks(): Done = {
       val clicksJson: String =
         SourceIO
-          .fromFile("./src/test/resources/clicks.json")
+          .fromFile("./src/test/resources/clicks/clicks.json")
           .mkString
 
       val clickSource = Source.fromIterator(() => Json.parse(clicksJson).as[Iterator[Click]])

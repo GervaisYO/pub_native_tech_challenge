@@ -40,7 +40,7 @@ class DataWriterSpec extends WordSpec with Matchers {
     "write partitioned impressions by app_id and country_code" in new DataWriterSpecData {
       val impressionsJson: String =
         SourceIO
-          .fromFile("./src/test/resources/impressions.json")
+          .fromFile("./src/test/resources/impressions/impressions.json")
           .mkString
 
       val impressionsSource: Source[Impression, NotUsed] = Source.fromIterator(() => Json.parse(impressionsJson).as[Iterator[Impression]])
@@ -68,7 +68,7 @@ class DataWriterSpec extends WordSpec with Matchers {
     "write partitioned clicks by impression_id" in new DataWriterSpecData {
       val clicksJson: String =
         SourceIO
-          .fromFile("./src/test/resources/clicks.json")
+          .fromFile("./src/test/resources/clicks/clicks.json")
           .mkString
 
       val clicksSource: Source[Click, NotUsed] = Source.fromIterator(() => Json.parse(clicksJson).as[Iterator[Click]])

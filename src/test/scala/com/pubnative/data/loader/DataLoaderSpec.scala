@@ -19,8 +19,8 @@ class DataLoaderSpec extends WordSpec with Matchers {
 
   trait DataLoadSpecData {
     val dataLoader = new DataLoader(1)
-    val impressionJsonContent: String = Source.fromResource("impressions.json").mkString
-    val clickJsonContent: String = Source.fromResource("clicks.json").mkString
+    val impressionJsonContent: String = Source.fromResource("impressions/impressions.json").mkString
+    val clickJsonContent: String = Source.fromResource("clicks/clicks.json").mkString
 
     implicit val actorSystem: ActorSystem = ActorSystem.create("DataLoaderSpec")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -36,7 +36,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
     "read impressions when given file paths"  in new DataLoadSpecData {
       val impressions: Future[List[Impression]] =
         dataLoader
-          .loadImpressions(List(Paths.get("./src/test/resources/impressions.json")).toIterator)
+          .loadImpressions(List(Paths.get("./src/test/resources/impressions/impressions.json")).toIterator)
           .runFold(List.empty[Impression]) { (acc, impression) =>
             impression :: acc
           }
@@ -72,7 +72,7 @@ class DataLoaderSpec extends WordSpec with Matchers {
     "read click when given file paths"  in new DataLoadSpecData {
       val clicks: Future[List[Click]] =
         dataLoader
-          .loadClicks(List(Paths.get("./src/test/resources/clicks.json")).toIterator)
+          .loadClicks(List(Paths.get("./src/test/resources/clicks/clicks.json")).toIterator)
           .runFold(List.empty[Click]) { (acc, click) =>
             click :: acc
           }
