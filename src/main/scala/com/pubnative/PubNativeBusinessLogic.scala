@@ -34,8 +34,8 @@ class PubNativeBusinessLogic(pubNativeConf: PubNativeConf, numberOfThreads: Int)
   private val metricsGenerator = new MetricsGenerator(dataLoader)
   private val recommendationGenerator = new RecommendationGenerator(dataLoader, dataWriter, topAdvertiserCount.getOrElse(5))
 
-  private val partitionedImpressionDir = Paths.get(outputDirectory, s"impressions_${Instant.now().toEpochMilli}")
-  private val partitionedClickDir = Paths.get(outputDirectory, s"clicks_${Instant.now().toEpochMilli}")
+  private val partitionedImpressionDir = Paths.get(outputDirectory, s"partitioned_impressions_${Instant.now().toEpochMilli}")
+  private val partitionedClickDir = Paths.get(outputDirectory, s"partitioned_clicks_${Instant.now().toEpochMilli}")
   private val metricsFilePath = Paths.get(outputDirectory, "metrics.json")
   private val recommendationsFilePath = Paths.get(outputDirectory, "recommendations.json")
 
@@ -79,7 +79,7 @@ class PubNativeBusinessLogic(pubNativeConf: PubNativeConf, numberOfThreads: Int)
           (impression => s"${impression.app_id}_${impression.country_code.getOrElse("NONE")}")
       )
       writeResult <- partitionedImpressionSource.runWith(Sink.ignore)
-      _ <- Future.successful(logger.info("impressions partitioned generated"))
+      _ <- Future.successful(logger.info("partitioned impressions generated"))
     } yield writeResult
   }
 
@@ -94,7 +94,7 @@ class PubNativeBusinessLogic(pubNativeConf: PubNativeConf, numberOfThreads: Int)
           (click => click.impression_id)
       )
       writeResult <- partitionedClickSource.runWith(Sink.ignore)
-      _ <- Future.successful(logger.info("click partitioned generated"))
+      _ <- Future.successful(logger.info("partitioned clicks generated"))
     } yield writeResult
   }
 
