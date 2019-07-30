@@ -31,9 +31,9 @@ The application accepts three mandatory parameters and three optional parameters
 - impressions-dir (*mandatory*): this is the directory where the impressions files are stored
 - clicks-dir (*mandatory*): this is the directory where the clicks files are stored
 - output-dir (*mandatory*): this is the directory where the output files (metrics.json and recommendations.json) will be stored 
-- streams-parallelism: this parameter controls the parallelism level for the stream processing
-- source-group-size: this parameter controls the number of items to group before writing them to the proper partition
-- top-advertiser-count: this parameter controls the number of top advertiser per **app_id** and **country_code** to generate for each recommendation
+- streams-parallelism (*default value is (numOfCores * 2 - 2)*): this parameter controls the parallelism level for the stream processing
+- source-group-size (*default value is 1000*): this parameter controls the number of items to group before writing them to the proper partition
+- top-advertiser-count (*default value is 5*): this parameter controls the number of top advertiser per **app_id** and **country_code** to generate for each recommendation
 
 ## Assumptions made during the development process
 - Number of advertiser per app_id and country_code is less then Int.MAX_VALUE
