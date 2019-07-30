@@ -1,6 +1,7 @@
 package com.pubnative.recommendations
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Path, Paths}
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 import akka.Done
@@ -10,35 +11,28 @@ import akka.stream.scaladsl.{Sink, Source}
 import com.pubnative.data.loader.DataLoader
 import com.pubnative.data.writer.DataWriter
 import com.pubnative.domain.{Click, Impression}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
-import scala.io.{Source => SourceIO}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+import scala.io.{Source => SourceIO}
 
-class RecommendationGeneratorSpec extends WordSpec with Matchers with BeforeAndAfterAll {
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    for {
-      rootDir <- List(Paths.get("./target", "impressions"), Paths.get("./target", "clicks"))
-      rootDirWithSubDir <- rootDir.toFile.listFiles().toSeq :+ rootDir.toFile
-      file <- rootDirWithSubDir.listFiles().toSeq :+ rootDirWithSubDir
-    } yield {
-      Files.delete(Paths.get(file.getAbsolutePath))
-    }
-  }
+class RecommendationGeneratorSpec extends WordSpec with Matchers {
 
   trait RecommendationGeneratorSpecData {
-    implicit val actorSystem: ActorSystem = ActorSystem.create("MetricsGeneratorSpec")
+    implicit val actorSystem: ActorSystem = ActorSystem.create("RecommendationGeneratorSpec")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     val dataLoader = new DataLoader(2)
     val dataWriter = new DataWriter(2, 1)
     val recommendationGenerator = new RecommendationGenerator(dataLoader, dataWriter, 2)
     val dirPath = "./target"
+    val partitionedImpressionsDir: Path =
+      Paths.get(dirPath, s"partitioned_impressions_${Instant.now().toEpochMilli}")
+    val partitionedClicksDir: Path =
+      Paths.get(dirPath, s"partitioned_clicks_${Instant.now().toEpochMilli}")
     val duration = Duration(20, TimeUnit.SECONDS)
 
     def generatePartitionedImpressions(): Done = {
@@ -51,7 +45,7 @@ class RecommendationGeneratorSpec extends WordSpec with Matchers with BeforeAndA
 
       val result =
         dataWriter
-          .writePartitions(impressionsSource, Paths.get(dirPath, "impressions"))(impression => s"${impression.app_id}_${impression.country_code.getOrElse("NONE")}")
+          .writePartitions(impressionsSource, partitionedImpressionsDir)(impression => s"${impression.app_id}_${impression.country_code.getOrElse("NONE")}")
           .runWith(Sink.ignore)
 
       await(result)
@@ -67,7 +61,7 @@ class RecommendationGeneratorSpec extends WordSpec with Matchers with BeforeAndA
 
       val result =
         dataWriter
-          .writePartitions(clickSource, Paths.get(dirPath, "clicks"))(click => click.impression_id)
+          .writePartitions(clickSource, partitionedClicksDir)(click => click.impression_id)
           .runWith(Sink.ignore)
 
       await(result)
@@ -83,10 +77,10 @@ class RecommendationGeneratorSpec extends WordSpec with Matchers with BeforeAndA
       generatePartitionedImpressions()
       generatePartitionedClicks()
 
-      val recommendations =
+      val recommendations: List[Recommendation] =
         await(
           recommendationGenerator
-            .generateRecommendations(Paths.get(dirPath, "impressions"), Paths.get(dirPath, "clicks"))
+            .generateRecommendations(partitionedImpressionsDir, partitionedClicksDir)
             .runFold(List.empty[Recommendation]) { (acc, recommendation) =>
               recommendation :: acc
             }
