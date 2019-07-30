@@ -9,12 +9,12 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.util.Try
 
 class PubNativeConf(arguments: Seq[String]) extends ScallopConf(arguments) {
-  val impressionsDir: ScallopOption[String] = opt[String](required = true)
-  val clicksDir: ScallopOption[String] = opt[String](required = true)
-  val outputDir: ScallopOption[String] = opt[String](required = true)
-  val topAdvertiserCount: ScallopOption[Int] = opt[Int]()
-  val streamsParallelism: ScallopOption[Int] = opt[Int]()
-  val sourceGroupSize: ScallopOption[Int] = opt[Int]()
+  val impressionsDir: ScallopOption[String] = opt[String]("impressions-dir", required = true)
+  val clicksDir: ScallopOption[String] = opt[String]("clicks-dir", required = true)
+  val outputDir: ScallopOption[String] = opt[String]("output-dir", required = true)
+  val topAdvertiserCount: ScallopOption[Int] = opt[Int]("top-advertiser-count")
+  val streamsParallelism: ScallopOption[Int] = opt[Int]("streams-parallelism")
+  val sourceGroupSize: ScallopOption[Int] = opt[Int]("source-group-size")
   verify()
 }
 
